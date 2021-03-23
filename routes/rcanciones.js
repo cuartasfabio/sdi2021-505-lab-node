@@ -26,4 +26,10 @@ module.exports = function(app) {
         res.send(respuesta);
     });
 
+    app.post('/cancion', function(req, res) {
+        res.send("Canción agregada: "+req.body.nombre+"<br>"
+            +" género: "+req.body.genero+"<br>"
+            +" precio: "+req.body.precio);
+    });
+
 };
