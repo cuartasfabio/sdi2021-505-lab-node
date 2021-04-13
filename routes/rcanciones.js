@@ -129,11 +129,11 @@ module.exports = function(app, swig, gestorBD) {
         let criterioComentarios = { "cancion_id" : gestorBD.mongo.ObjectID(req.params.id) };
         gestorBD.obtenerCanciones(criterioCancion,function(canciones){
             if ( canciones == null ){
-                res.send("Error al recuperar la canción.");
+                res.send(swig.renderFile('views/error.html', { error : "Error al recuperar canciones"}));
             } else {
                   gestorBD.obtenerComentarios(criterioComentarios,function(comentarios){
                       if ( comentarios == null ){
-                          res.send("Error al recuperar los comentarios.");
+                          res.send(swig.renderFile('views/error.html', { error : "Error al recuperar los comentarios"}));
                       } else {
                           if(req.session.usuario != null) {
                               // Mira si ya la ha comprado
@@ -141,7 +141,6 @@ module.exports = function(app, swig, gestorBD) {
                                   let comprable = false;
                                   // Mirar si la cancion pertenece al usuario en sesion
                                   if(result || canciones[0].autor == req.session.usuario) {
-                                      console.log("Ya la ha comprado o es el autor!");
                                       comprable = false;
                                   }
 
