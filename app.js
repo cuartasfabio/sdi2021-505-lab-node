@@ -102,7 +102,7 @@ app.use("/audios/",routerAudios);
 app.use(express.static('public'));
 
 // Variables
-app.set('port', 8081);
+app.set('port', 8082);
 app.set('db','mongodb://admin:sdi@tiendamusica-shard-00-00.fgkzx.mongodb.net:27017,tiendamusica-shard-00-01.fgkzx.mongodb.net:27017,tiendamusica-shard-00-02.fgkzx.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-mb2g3a-shard-0&authSource=admin&retryWrites=true&w=majority');
 app.set('clave','abcdefg');
 app.set('crypto',crypto);

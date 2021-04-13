@@ -135,12 +135,25 @@ module.exports = function(app, swig, gestorBD) {
                       if ( comentarios == null ){
                           res.send("Error al recuperar los comentarios.");
                       } else {
-                        let respuesta = swig.renderFile('views/bcancion.html',
-                            {
-                                cancion : canciones[0],
-                                comentarios : comentarios
-                            });
-                        res.send(respuesta);
+                          if(req.session.usuario != null) {
+                              // Mira si ya la ha comprado
+                              yaLaHaComprado(req.session.usuario, canciones[0], function (result) {
+                                  let comprable = false;
+                                  // Mirar si la cancion pertenece al usuario en sesion
+                                  if(result || canciones[0].autor == req.session.usuario) {
+                                      console.log("Ya la ha comprado o es el autor!");
+                                      comprable = false;
+                                  }
+
+                                  let respuesta = swig.renderFile('views/bcancion.html',
+                                      {
+                                          cancion : canciones[0],
+                                          comentarios : comentarios,
+                                          comprable : comprable
+                                      });
+                                  res.send(respuesta);
+                              });
+                          }
                       }
                   });
             }
@@ -280,6 +293,38 @@ module.exports = function(app, swig, gestorBD) {
         } else {
             callback(true); // FIN
         }
+    };
+
+    function yaLaHaComprado(user, cancion, callback) {
+        let criterio = { "usuario" : user };
+
+        gestorBD.obtenerCompras(criterio, function (compras) {
+            if (compras == null) {
+                console.log("Error al listar");
+            } else {
+                let cancionesCompradasIds = [];
+                for (let i=0; i < compras.length; i++) {
+                    cancionesCompradasIds.push( compras[i].cancionId );
+                }
+
+                if (cancionesCompradasIds.length > 0) {
+                    let criterio = { "_id" : { $in: cancionesCompradasIds } }
+                    gestorBD.obtenerCanciones(criterio, function (canciones) {
+                        if (compras == null) {
+                            console.log("Error al listar");
+                        } else {
+                            for (let i = 0; i < canciones.length; i++) {
+                                if (canciones[i]._id.toString() == cancion._id.toString()) {
+                                    callback(true);
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    callback(false);
+                }
+            }
+        });
     };
 
 
