@@ -135,6 +135,14 @@ module.exports = function(app, swig, gestorBD) {
                       if ( comentarios == null ){
                           res.send(swig.renderFile('views/error.html', { error : "Error al recuperar los comentarios"}));
                       } else {
+                          let configuracion = {
+                              url: "https://www.freeforexapi.com/api/live?pairs=EURUSD",
+                              method: "get",
+                              headers: {
+                                  "token": "ejemplo",
+                              }
+                          }
+                          let rest = app.get("rest");
                           if(req.session.usuario != null) {
                               // Mira si ya la ha comprado
                               yaLaHaComprado(req.session.usuario, canciones[0], function (result) {
@@ -144,13 +152,20 @@ module.exports = function(app, swig, gestorBD) {
                                       comprable = false;
                                   }
 
-                                  let respuesta = swig.renderFile('views/bcancion.html',
-                                      {
-                                          cancion : canciones[0],
-                                          comentarios : comentarios,
-                                          comprable : comprable
-                                      });
-                                  res.send(respuesta);
+                                  rest(configuracion, function (error, response, body) {
+                                      console.log("cod: " + response.statusCode + " Cuerpo :" + body);
+                                      let objetoRespuesta = JSON.parse(body);
+                                      let cambioUSD = objetoRespuesta.rates.EURUSD.rate;
+                                      // nuevo campo "usd"
+                                      canciones[0].usd = cambioUSD * canciones[0].precio;
+                                      let respuesta = swig.renderFile('views/bcancion.html',
+                                          {
+                                              cancion : canciones[0],
+                                              comentarios : comentarios,
+                                              comprable : comprable
+                                          });
+                                      res.send(respuesta);
+                                  })
                               });
                           }
                       }
