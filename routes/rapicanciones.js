@@ -73,7 +73,7 @@ module.exports = function(app, gestorBD) {
 
 
         // Validar nombre, genero, precio
-        if( cancion.nombre.length > 5 || cancion.nombre.length > 30 || parseFloat(cancion.precio) < 0.0) {
+        if( cancion.nombre.length < 5 || cancion.nombre.length > 30 || parseFloat(cancion.precio) < 0.0) {
             res.status(500);
             res.json({
                 error : "se ha producido un error: formato de datos incorrecto"
@@ -119,7 +119,7 @@ module.exports = function(app, gestorBD) {
                     cancion.precio = req.body.precio;
 
                 // Validar nombre, genero, precio
-                if( cancion.nombre.length > 5 || cancion.nombre.length > 30 || parseFloat(cancion.precio) < 0.0) {
+                if( cancion.nombre.length < 5 || cancion.nombre.length > 30 || parseFloat(cancion.precio) < 0.0) {
                     res.status(500);
                     res.json({
                         error : "se ha producido un error: formato de datos incorrecto"
